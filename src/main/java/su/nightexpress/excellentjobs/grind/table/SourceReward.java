@@ -66,6 +66,9 @@ public class SourceReward {
 
     @NotNull
     public GrindReward roll() {
+        if (!this.checkChance()) {
+            return new GrindReward();
+        }
         return new GrindReward(this.rollXP(), this.rollMoney());
     }
 
