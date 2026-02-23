@@ -1,5 +1,6 @@
 package su.nightexpress.excellentjobs.job;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.TileState;
 import org.bukkit.damage.DamageSource;
@@ -609,7 +610,12 @@ public class JobManager extends AbstractManager<JobsPlugin> {
             );
         }
 
-        income.payAndClear(player);
+        // World operations must run on main thread.
+        if (Bukkit.isPrimaryThread()) {
+            income.payAndClear(player);
+        } else {
+            this.plugin.runTask(task -> income.payAndClear(player));
+        }
 
         return true;
     }

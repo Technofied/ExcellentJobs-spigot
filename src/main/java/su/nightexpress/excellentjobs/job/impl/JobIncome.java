@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nightexpress.nightcore.bridge.currency.Currency;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,16 +15,10 @@ public class JobIncome {
         this.currencyMap = new ConcurrentHashMap<>();
     }
 
-    /**
-     * Pays the current income to the player and clears the map.
-     * Snapshots and clears first, then pays from the snapshot, so that any
-     * re-entrant or async adds (e.g. from item currency give() triggering
-     * grind events) cannot cause the same income to be paid multiple times.
-     */
+    /** Must be called from the main thread when income includes item currencies. */
     public void payAndClear(@NotNull Player player) {
-        Map<Currency, Double> snapshot = new HashMap<>(this.currencyMap);
+        this.pay(player);
         this.clear();
-        snapshot.forEach((currency, amount) -> currency.give(player, amount));
     }
 
     public void pay(@NotNull Player player) {
